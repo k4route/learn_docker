@@ -1,0 +1,5 @@
+docker-compose -f docker-compose.base.yml -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.extends.yml up -d
+docker-compose up -d --build
+docker-compose down --rmi "local"
+

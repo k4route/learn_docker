@@ -1,0 +1,40 @@
+version: '2'
+services:
+  nginx:
+    build: ./k4route-nginx
+    volumes:
+     - ./application:/var/www/html
+    networks:
+     - sdnet0
+  php:
+    build: ./k4route-php
+    volumes:
+     - ./application:/var/www/html
+    networks:
+     - sdnet0
+  redis:
+    image: redis:alpine
+    volumes:
+     - redisdata:/data
+    networks:
+     - sdnet0
+  mysql:
+    image: mysql:8.3.0
+    volumes:
+     - mysqldata:/var/lib/mysql
+    networks:
+     - sdnet0
+networks:
+  sdnet0:
+    driver: "bridge"
+    driver_opts:
+      com.docker.network.bridge.name: br-sdnet0
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
+volumes:
+  mysqldata:
+    driver: "local"
+  redisdata:
+    driver: "local"

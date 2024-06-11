@@ -1,0 +1,50 @@
+version: '2'
+services:
+  nginx:
+    build: ./k4route-nginx
+    ports:
+     - "${APP_PORT}:80"
+    volumes:
+     - ./application:/var/www/html
+    networks:
+     - sdnet0
+  php:
+    build: ./k4route-php
+    volumes:
+     - ./application:/var/www/html
+    networks:
+     - sdnet0
+  redis:
+    image: redis:alpine
+    volumes:
+     - redisdata:/data
+    networks:
+     - sdnet0
+  mysql:
+    image: mysql:8.3.0
+    ports:
+     - "${DB_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: my-app
+      MYSQL_USER: app-user
+      MYSQL_PASSWORD: app-pass
+    volumes:
+     - mysqldata:/var/lib/mysql
+    networks:
+     - sdnet0
+networks:
+  sdnet0:
+    driver: "bridge"
+    driver_opts:
+      com.docker.network.bridge.name: br-sdnet0
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
+volumes:
+  mysqldata:
+    driver: "local"
+  redisdata:
+    driver: "local"
+

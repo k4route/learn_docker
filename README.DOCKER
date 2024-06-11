@@ -1,0 +1,4 @@
+docker-class		Initial part of classess with trying to create own images
+docker-compose-class	Start with compose
+dckr0			Fork from docker-compose-class with some advanced features
+dckr1			Fork dckr0 with multiple compose files

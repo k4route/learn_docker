@@ -1,0 +1,9 @@
+FROM ubuntu
+
+MAINTAINER Fedor Chernyshev <k4route@gmail.com>
+
+RUN apt update && apt install -y openssh-server
+RUN mkdir /run/sshd
+ADD sshd_config /etc/ssh/sshd_config
+RUN echo 'root:root' | chpasswd
+CMD ["/usr/sbin/sshd","-D"]
