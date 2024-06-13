@@ -1,0 +1,10 @@
+# Doker command to run the application
+
+#After php and ngnix already build run containers from this folder:
+
+docker run -d --name=myphp -v $(pwd)/application/:/var/www/html \
+k4route/php:3.0.0
+
+docker run -d --link=myphp:php -p 80:80 -v $(pwd)/application:/var/www/html \
+k4route/nginx:3.0.0
+

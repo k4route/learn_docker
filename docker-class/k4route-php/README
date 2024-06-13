@@ -1,0 +1,14 @@
+# How to build a container
+
+docker build -t k4route/php:3.0.0 .
+
+docker run --rm -it k4route/php:3.0.0 php -v
+docker run --rm -it k4route/php:3.0.0 composer -h
+docker run --rm -it k4route/php:3.0.0 which php-fpm8.1
+
+Но так получилось, что компосер недоступен на момент сборки. 
+Урл пингуется, но сайт не отвечает уже 2 день.
+
+Пробуем установить его с докер хаб.
+
+
