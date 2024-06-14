@@ -1,10 +1,37 @@
+??? from here until ???END lines may have been inserted/deleted
 # Doker command to run the application
 
 #After php and ngnix already build run containers from this folder:
 
-docker run -d --name=myphp -v $(pwd)/application/:/var/www/html \
+docker run -d --rm --name=myphp -v $(pwd)/application/:/var/www/html \
 k4route/php:3.0.0
 
-docker run -d --link=myphp:php -p 80:80 -v $(pwd)/application:/var/www/html \
+docker run -d --rm --link=myphp:php -p 80:80 -v $(pwd)/application:/var/www/html \
 k4route/nginx:3.0.0
+
+# Use browser to connect IP:80
+
+# Next step is to link everything together.
+# For test web app we also need redis and mysql
+
+docker run -d --name=redis redis:alpine
+
+docker run -d --name=mysql \
+		   -e MYSQL_ROOT_PASSWORD=root \
+		   -e MYSQL_DATABASE=my-app \
+		   -e MYSQL_USER=app-user \
+		   -e MYSQL_PASSWORD=app-pass \
+		   mysql:8.3.0
+
+docker run -d --name=php \
+		   --link=redis:redis \
+		   --link=mysql:mysql \
+		   -v $(pwd)/application:/var/www/html \
+		   k4route/php:3.0.0
+
+docker run -d --name=nginx \
+		   --link=php:php \
+		   -p 80:80 \
+		   -v $(pwd)/application:/var/www/html \
+		   k4route/nginx:3.0.0
 
