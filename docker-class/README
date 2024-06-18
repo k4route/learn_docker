@@ -1,4 +1,3 @@
-??? from here until ???END lines may have been inserted/deleted
 # Doker command to run the application
 
 #After php and ngnix already build run containers from this folder:
@@ -34,4 +33,88 @@ docker run -d --name=nginx \
 		   -p 80:80 \
 		   -v $(pwd)/application:/var/www/html \
 		   k4route/nginx:3.0.0
+
+docker stop $(docker ps -q)
+docker rm  $(docker ps -lq)
+
+
+
+######################################################
+#
+# Now we can define docker networks and try it
+#
+######################################################
+
+
+docker network create \
+  --driver bridge \
+  --ipam-driver default \
+  --subnet  10.44.0.0/24 \
+  --opt com.docker.network.bridge.name=br_sdnet0 \
+  --opt com.docker.network.container_iface_prefix=sdnet0 \
+  sdnet0
+
+docker network ls
+docker network inspect
+
+docker run -d --name=redis --network=sdnet0 redis:alpine
+
+docker run -d --name=mysql \
+                   --network=sdnet0 \
+                   -e MYSQL_ROOT_PASSWORD=root \
+                   -e MYSQL_DATABASE=my-app \
+                   -e MYSQL_USER=app-user \
+                   -e MYSQL_PASSWORD=app-pass \
+                   mysql:8.3.0
+
+docker run -d --name=php \
+                   --network=sdnet0 \
+                   --link=redis:redis \
+                   --link=mysql:mysql \
+                   -v $(pwd)/application:/var/www/html \
+                   k4route/php:3.0.0
+
+docker run -d --name=nginx \
+                   --network=sdnet0 \
+                   --link=php:php \
+                   -p 80:80 \
+                   -v $(pwd)/application:/var/www/html \
+                   k4route/nginx:3.0.0
+
+
+######################################################
+#
+# Now we can define docker volumes and try it
+#
+######################################################
+
+docker volume create --driver=local --name=mysqldata
+docker volume create --driver=local --name=redisdata
+docker volume inspect mysqldata
+
+docker run -d --name=redis --network=sdnet0 \
+		   -v redisdata:/data \
+		   redis:alpine
+
+docker run -d --name=mysql \
+		   --network=sdnet0 \
+		   -v mysqldata:/var/lib/mysql \
+		   -e MYSQL_ROOT_PASSWORD=root \
+		   -e MYSQL_DATABASE=my-app \
+		   -e MYSQL_USER=app-user \
+		   -e MYSQL_PASSWORD=app-pass \
+		   mysql:8.3.0
+
+docker run -d --name=php \
+		   --network=sdnet0 \
+		   -v /home/k4/docker-class/application:/var/www/html \
+		   k4route/php:3.0.0
+
+docker run -d --name=nginx \
+		   --network=sdnet0 \
+		   -p 80:80 \
+		   -v /home/k4/docker-class/application:/var/www/html \
+		   k4route/nginx:3.0.0
+
+
 
