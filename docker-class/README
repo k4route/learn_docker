@@ -12,6 +12,14 @@ k4route/nginx:3.0.0
 
 # Next step is to link everything together.
 # For test web app we also need redis and mysql
+# Keep in mind mysql creates unique volume every time it runs
+# docker volume ls
+# docker volume rm
+#
+# Also it takes time to start mysql with all new data in volume
+# Define already created volume with mysql data to reduce start time
+# docker ps
+# docker logs -f 342fwegrt4
 
 docker run -d --name=redis redis:alpine
 
@@ -82,6 +90,8 @@ docker run -d --name=nginx \
                    k4route/nginx:3.0.0
 
 
+docker volume rm $(docker volume ls -q)
+
 ######################################################
 #
 # Now we can define docker volumes and try it
@@ -117,4 +127,6 @@ docker run -d --name=nginx \
 		   k4route/nginx:3.0.0
 
 
+docker stop $(docker ps -q)
+docker rm  $(docker ps -lq)
 
