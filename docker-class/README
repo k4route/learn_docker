@@ -117,16 +117,18 @@ docker run -d --name=mysql \
 
 docker run -d --name=php \
 		   --network=sdnet0 \
-		   -v /home/k4/docker-class/application:/var/www/html \
+		   -v $(pwd)/application:/var/www/html \
 		   k4route/php:3.0.0
 
 docker run -d --name=nginx \
 		   --network=sdnet0 \
 		   -p 80:80 \
-		   -v /home/k4/docker-class/application:/var/www/html \
+		   -v $(pwd)/application:/var/www/html \
 		   k4route/nginx:3.0.0
 
 
 docker stop $(docker ps -q)
-docker rm  $(docker ps -lq)
+docker rm  $(docker ps -aq)
 
+killallcnt.sh to stop and remove all containers
+volumes.sh is to run 4 containers with volumes
