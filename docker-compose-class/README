@@ -2,3 +2,24 @@
 # Docker-compose is a tool to run multicontainer applications
 #
 
+  php:
+    image: k4route/php:3.0.0
+    volumes:
+     - ./application:/var/www/html
+    networks:
+     - sdnet0
+    deploy:
+      replicas: 3
+
+# Will create 3 php instances under 1 name and load balance requests
+
+Address:        127.0.0.11#53
+
+Non-authoritative answer:
+Name:   php
+Address: 10.5.0.4
+Name:   php
+Address: 10.5.0.6
+Name:   php
+Address: 10.5.0.3
+
